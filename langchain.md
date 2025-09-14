@@ -1,17 +1,45 @@
-flowchart TD
-    %% Each item below MUST be on its own line
-    A[User Input: "LangChain"]
-    B["PromptTemplate<br>Creates a full prompt from the topic"]
-    C["Model<br>(Gemini 1.5 Flash)"]
-    D{".pipe()"}
-    E["Final Response<br>(The explanation of LangChain)"]
-    F[Console]
 
-    %% This part defines the arrows
-    A --> B
-    subgraph Chain
+
+```mermaid
+flowchart TD
+    start(["start"])
+    
+    doc_loader("Document Loader")
+    text_splitter("Text Splitter")
+    embeddings("Embeddings")
+    vector_store("Vector Store")
+    retriever("Retriever")
+    
+    prompt_template("Prompt Template")
+    llm("LLM")
+    output_parser("Output Parser")
+    
+    memory("Memory")
+    
+    agent("Agent")
+    tools("Tools")
+    
+    finish(["end"])
+
+    subgraph Data Connection
         direction LR
-        B -- formatted prompt --> D -- chained to --> C
+        doc_loader --> text_splitter --> embeddings --> vector_store --> retriever
     end
-    C --> E
-    E --> F
+
+    retriever -->|relevant docs| prompt_template
+    prompt_template -->|formatted prompt| llm
+    llm -->|LLM output| output_parser
+    output_parser --> finish
+    
+    subgraph Core Chain
+        direction LR
+        prompt_template -.- llm -.- output_parser
+    end
+    
+    memory <--> llm
+    
+    subgraph Agent Loop
+        direction LR
+        llm <--> agent <--> tools
+    end
+```
