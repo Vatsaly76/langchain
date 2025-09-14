@@ -1,5 +1,5 @@
 flowchart TD
-    %% Define the shapes/nodes
+    %% Each item below MUST be on its own line
     A[User Input: "LangChain"]
     B["PromptTemplate<br>Creates a full prompt from the topic"]
     C["Model<br>(Gemini 1.5 Flash)"]
@@ -7,7 +7,7 @@ flowchart TD
     E["Final Response<br>(The explanation of LangChain)"]
     F[Console]
 
-    %% Define the flow/connections
+    %% This part defines the arrows
     A --> B
     subgraph Chain
         direction LR
