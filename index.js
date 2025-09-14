@@ -1,4 +1,5 @@
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
+import { PromptTemplate } from "@langchain/core/prompts";
 
 // Suppress marketing/banner output from dotenv v17 by pre-setting the quiet flag
 process.env.DOTENV_CONFIG_QUIET = "true";
@@ -6,23 +7,25 @@ process.env.DOTENV_CONFIG_QUIET = "true";
 // Dynamically import dotenv AFTER setting quiet flag so it takes effect
 const { config } = await import("dotenv");
 
-
 config();
 const model = new ChatGoogleGenerativeAI({
     model: "gemini-2.5-flash",
     apiKey: process.env.GEMINI_API_KEY,
 });
 
-const res = await model.invoke("jaun elia ki shairi likho, write his orginal shairi  (max 2 lines, use emoji if possible)");
-    console.log(res.content);
+const promptTemplate = PromptTemplate.fromTemplate(`
+    At the top Write {topic} in question form with a question mark at the end. Then below that,
+    explain {topic} in very simple words Like I'm 5 years old,
+    make sure it includes the core concepts and avoid jargon.
+    use examples and analogies to make it relatable.
+    make the answer as concise as possible.
+`);
 
+// Note: very Important
+// thats why it name chain because we are chaining prompt and model because output of prompt is input to model
+const chain = promptTemplate.pipe(model)
 
-// Minimal invocation so the script does something visible
-// try {
-//     const res = await model.invoke("Greet user with a positive message. (in 5 words or less)");
-//     // LangChain chat models usually return a BaseMessage-like object
-//     console.log("Model response:", res?.content ?? res);
-// } catch (err) {
-//     console.error("Model invocation failed:", err);
-//     process.exit(1);
-// }
+chain.invoke({ topic: "LangChain" }).then((response) => {
+    console.log(response.content);
+})
+
